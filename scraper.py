@@ -1,34 +1,51 @@
 from urllib.request import urlopen
+from html import unescape
+OLDEST = 83 # oldest page number as of August 27th, 2020
 
-# Take a given page number (1-83) and return the first article of that page
+# Webpage scraping code
+def webscrape(url):
+    page = urlopen(url)
+    html_bytes = page.read()
+    return html_bytes.decode("utf-8")
+
+    
+
+# Finding the oldest page number
+scrape = webscrape("https://smashboards.com/news")
+start_index = scrape.find("min=\"1\" max=\"") + len("min=\"1\" max=\"")
+end_index = scrape.find("\"", start_index)
+try:
+    old_page = int(scrape[start_index:end_index].strip())
+except ValueError:
+    # print("Oldest page is " + str(OLDEST))
+    old_page = OLDEST   # in case oldest page scrape doesn't work
+
+# Take a given page number from 1 to old_page and return the first article of that page
 while(True):
-    page_no = input("Please enter the page you want to extract from (1-83): ")
+    page_no = input("Please enter the Smashboards page you want to extract from (1-" + str(old_page) + "): ")
     try:
         page_no = int(page_no)
     except ValueError:
-        print("Input not numeric, please try again")
+        input("Input not numeric, press enter to try again ")
     else:
-        if(1 <= page_no <= 83):
+        if(1 <= page_no <= old_page):
             break
         else:
-            print("Input not between 1 and 83, please try again")
-
-# Starter code
-url = "https://smashboards.com/news/page-" + str(page_no)
-page = urlopen(url)
-html_bytes = page.read()
-html = html_bytes.decode("utf-8")
+            input("Input not between 1 and " + str(old_page) + ", press enter to try again ")
 
 # The first article on Smashboards starts with a <span>
-# so extract words between first <span> and its </span> (not first </span>)
-start_index = html.find("<span>") + len("<span>")
-end_index = html.find("</span>", start_index)
-first_title = html[start_index:end_index]
+# so extract words between the first <span> and its corresponding </span>
+scrape = webscrape("https://smashboards.com/news/page-"+ str(page_no))
+max_art = scrape.count("<span>")
+print(max_art)
+start_index = scrape.find("<span>") + len("<span>")
+end_index = scrape.find("</span>", start_index)
+first_title = scrape[start_index:end_index]
 
-# Removes tabs, newlines, and spaces in the extracted string
+# Removes tabs, newlines, spaces, and HTML character codes in the extracted string
 str_list = first_title.split()
 first_title = " ".join(str_list)
-print(first_title) 
+print(unescape(first_title))
 
 # To print into a file for checking
 # a_file = open("output.txt", "w")
