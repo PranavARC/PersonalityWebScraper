@@ -1,7 +1,6 @@
 from urllib.request import urlopen
 from html import unescape
 from webbrowser import open
-from sys import exit
 OLDEST = 83 # oldest page number as of August 27th, 2020
 
 # Webpage scraping code
@@ -32,36 +31,32 @@ end_index = scrape.find("\"", start_index)
 try:
     old_page = int(scrape[start_index:end_index].strip())
 except ValueError:
-    # print("Oldest page is " + str(OLDEST))
     old_page = OLDEST   # in case oldest page scrape doesn't work
 
 # Take a given page number from 1 to old_page and return the first article of that page
 page_no = chooser("Smashboards page you want to browse", old_page)
 
-# Check the number of articles on that page (usually 20 for every page but the last)
+# Check the number of articles on that page (usually 20), and list all their titles by looping
 scrape = webscrape("https://smashboards.com/news/page-"+ str(page_no))
 max_art = scrape.count("<span>")
+begin = 0
+i = 1
+while(i <= max_art):
+    start_index = scrape.find('<span>', begin) + len("<span>")
+    end_index = scrape.find("</span>", start_index)
+    art_title = scrape[start_index:end_index]
+    # Remove tabs, newlines, spaces, HTML character codes in art_title with split, join, unescape
+    str_list = art_title.split()
+    art_title = " ".join(str_list)
+    begin = end_index
+    if("<span class=\"" in art_title):
+        continue
+    print(str(i) + ": " + unescape(art_title))
+    i += 1
+
+# Take a given article number, move to its title, take its corresponding link, and open it
 art_no = chooser("article index you want to check out", max_art)
-
-# Way to dynamically choose the (n-1)th index. WARNING: Corrupts the original scrape
 start_index = scrape.replace('<span>', '777777', art_no-1).find('<span>') + len("<span>")
-end_index = scrape.find("</span>", start_index)
-art_title = scrape[start_index:end_index]
-
-# Removes tabs, newlines, spaces, and HTML character codes in the extracted string
-str_list = art_title.split()
-art_title = " ".join(str_list)
-print("The article's title is: " + unescape(art_title))
-
-# Open a webbrowser to the scraped article link if chosen
-choice = input("Do you want to read it? (Y/N): ")
-if(choice != 'Y' and choice != 'y'):
-    exit(0)
 start_index = scrape.rfind("<a href=\"", 0, start_index) + len("<a href=\"")
 end_index = scrape.find("\">", start_index)
-open("https://smashboards.com" + scrape[start_index:end_index], new=0, autoraise=True)
-
-# To print into a file for checking
-# a_file = open("output.txt", "w")
-# print(first_title, file = a_file)
-# a_file.close()
+open("https://smashboards.com" + scrape[start_index:end_index], new = 0, autoraise = True)
