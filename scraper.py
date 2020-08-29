@@ -45,7 +45,7 @@ while(i <= max_art):
     start_index = scrape.find('<span>', begin) + len("<span>")
     end_index = scrape.find("</span>", start_index)
     art_title = scrape[start_index:end_index]
-    # Remove tabs, newlines, spaces, HTML character codes in art_title with split, join, unescape
+    # Remove whitespace, HTML character codes in art_title with split, join, unescape
     str_list = art_title.split()
     art_title = " ".join(str_list)
     begin = end_index
