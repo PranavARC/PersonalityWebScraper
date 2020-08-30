@@ -1,5 +1,6 @@
 from urllib.request import urlopen
 from html import unescape
+from operator import attrgetter
 
 # Webpage scraping code
 def webscrape(url):
@@ -7,11 +8,21 @@ def webscrape(url):
     html_bytes = page.read()
     return html_bytes.decode("utf-8")
 
+# An article class to put objects in an array
+class article:
+    def __init__(self, title, views):
+        self.title = title
+        self.views = views
+    def __str__(self):
+        return self.title + ": " + str(self.views)
+
 # Check the number of articles on that page, and list their titles and view counts by looping
 scrape = webscrape("https://smashboards.com/news/authors/arcain.421960/")
 max_art = scrape.count("<span>")
 begin = 0
 total_views = 0
+articles = []
+
 for i in range(1, max_art + 1):
     # Find the title first
     start_index = scrape.find('<span>', begin) + len("<span>")
@@ -30,7 +41,15 @@ for i in range(1, max_art + 1):
     str_list = view_count.split()
     view_count = int((" ".join(str_list)).replace(",", ""))
     total_views += view_count
-    print(str(i) + ". " + art_title + ": " + str(view_count))
+
+    articles.append(article(art_title, view_count))
     begin = end_index
+
+# Sorting the array by descending view counts and printing
+articles.sort(key=attrgetter('views'), reverse=True)
+num = 1
+for i in articles:
+    print(str(num) + ". " + str(i))
+    num += 1
 
 input("Total views: " + str(total_views))
