@@ -10,11 +10,12 @@ def webscrape(url):
 
 # An article class to put objects in an array
 class article:
-    def __init__(self, title, views):
+    def __init__(self, title, views, date):
         self.title = title
         self.views = views
+        self.date = date
     def __str__(self):
-        return self.title + ": " + str(self.views)
+        return self.title + ": " + str(self.views) + " - " + self.date
 
 # Check the number of articles on that page, and list their titles and view counts by looping
 scrape = webscrape("https://smashboards.com/news/authors/arcain.421960/")
@@ -33,6 +34,11 @@ for i in range(1, max_art + 1):
     art_title = unescape(" ".join(str_list))
     begin = end_index
 
+    # Find the publication date last
+    start_index = scrape.find("data-date-string=\"", start_index) + len("data-date-string=\"")
+    end_index = scrape.find("\"", start_index)
+    pub_date = scrape[start_index:end_index]
+
     # Find the view count next
     start_index = scrape.find("<i class=\"fa--xf far fa-eye\" aria-hidden=\"true\"></i>", begin) + len("<i class=\"fa--xf far fa-eye\" aria-hidden=\"true\"></i>")
     end_index = scrape.find("</li>", start_index)
@@ -41,9 +47,8 @@ for i in range(1, max_art + 1):
     str_list = view_count.split()
     view_count = int((" ".join(str_list)).replace(",", ""))
     total_views += view_count
-
-    articles.append(article(art_title, view_count))
-    begin = end_index
+    # begin = end_index # in case
+    articles.append(article(art_title, view_count, pub_date))    
 
 # Sorting the array by descending view counts and printing
 articles.sort(key=attrgetter('views'), reverse=True)
