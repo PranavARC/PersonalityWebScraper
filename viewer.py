@@ -2,6 +2,10 @@ from urllib.request import urlopen
 from html import unescape
 from operator import attrgetter
 import datetime
+try:
+    import pytz
+except ModuleNotFoundError:
+    pass
 
 # Webpage scraping code
 def webscrape(url):
@@ -61,8 +65,17 @@ for i in articles:
     print(str(num) + ". " + str(i))
     num += 1
 
+# Use of pytz library to sync timezones (SmashBoards runs on PST)
+try:
+    pst = pytz.timezone('Europe/Berlin')
+    last_date = last_date.astimezone(pst)
+except NameError:
+    current = datetime.datetime.now()
+else:
+    current = datetime.datetime.now(pst)
+
 # Find days since last article
-days_since = ((datetime.datetime.now()) - last_date).days
+days_since = ((current) - last_date).days
 # To prevent negative days from timezone issues
 if(days_since < 0):
     days_since = 0
