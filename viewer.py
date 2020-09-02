@@ -15,10 +15,11 @@ def webscrape(url):
 
 # An article class to put objects in an array
 class article:
-    def __init__(self, title, views, date):
+    def __init__(self, title, views, date, age):
         self.title = title
         self.views = views
         self.date = date
+        self.age = age
     def __str__(self):
         return self.title + ": " + str(self.views) + " (" + self.date.strftime("%b %d, %Y") + ")"
 
@@ -56,13 +57,16 @@ for i in range(1, max_art + 1):
     view_count = int((" ".join(str_list)).replace(",", ""))
     total_views += view_count
     # begin = end_index # Just in case
-    articles.append(article(art_title, view_count, date_obj))    
+    articles.append(article(art_title, view_count, date_obj, i))    
 
 # Sorting the array by descending view counts and printing
 articles.sort(key=attrgetter('views'), reverse=True)
 num = 1
 for i in articles:
     print(str(num) + ". " + str(i))
+    if(i.age == 1):
+        newest = str(i.age)
+
     num += 1
 
 # Use of pytz library to sync timezones (SmashBoards runs on PST)
@@ -81,5 +85,5 @@ if(days_since < 0):
     days_since = 0
 
 print("\nTotal views: " + str(total_views))
-print("Days since last article: " + str(days_since))
+print("Days since last article: " + str(days_since) + " (" + newest + ")")
 input("")
