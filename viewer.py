@@ -66,7 +66,6 @@ for i in articles:
     print(str(num) + ". " + str(i))
     if(i.age == 1):
         newest = str(num)
-
     num += 1
 
 # Use of pytz library to sync timezones (SmashBoards runs on PST)
