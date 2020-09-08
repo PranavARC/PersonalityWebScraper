@@ -65,7 +65,7 @@ num = 1
 for i in articles:
     print(str(num) + ". " + str(i))
     if(i.age == 1):
-        newest = str(i.age)
+        newest = str(num)
 
     num += 1
 
