@@ -5,10 +5,6 @@ from difflib import SequenceMatcher
 from time import sleep
 from webbrowser import open
 import datetime
-try:
-    import pytz
-except ModuleNotFoundError:
-    pass
 
 # Webpage scraping code
 def webscrape(url):
@@ -176,14 +172,8 @@ if(last_date == 0):
     sleep(2)
     exit(0)
 
-# Use of pytz library to sync timezones (SmashBoards runs on PST)
-try:
-    pst = pytz.timezone('Europe/Berlin')
-    last_date = last_date.astimezone(pst)
-except NameError:
-    current = datetime.datetime.now()
-else:
-    current = datetime.datetime.now(pst)
+# No use of timezone correction (use the master branch and install pytz for that)
+current = datetime.datetime.now()
 
 # Find days since last article
 days_since = ((current) - last_date).days
