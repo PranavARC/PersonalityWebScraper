@@ -3,6 +3,7 @@ from html import unescape
 from operator import attrgetter
 from difflib import SequenceMatcher
 from time import sleep
+from webbrowser import open
 import datetime
 try:
     import pytz
@@ -192,4 +193,14 @@ if(days_since < 0):
 
 print("\nTotal views: " + str(total_views))
 print("Days since last article: " + str(days_since) + " (" + newest + ")")
-sleep(5)
+
+try:
+    art_no = int(input("Enter an article number if you wish to read it, or anything else to exit: "))
+except ValueError:
+    exit(0)
+if(1 <= art_no <= len(articles)):
+    true_no = articles[art_no - 1].age
+    start_index = scrape.replace('<span>', '777777', true_no-1).find('<span>') + len("<span>")
+    start_index = scrape.rfind("<a href=\"", 0, start_index) + len("<a href=\"")
+    end_index = scrape.find("\">", start_index)
+    open("https://smashboards.com" + scrape[start_index:end_index], new = 0, autoraise = True)
