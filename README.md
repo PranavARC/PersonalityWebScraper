@@ -13,7 +13,7 @@ lister: Doesn't list articles
 looper: Allows selection of different page without relaunching
 
 ## Installation ##
-Only requires installation of pytz to system to prevent miscalculations due to timezones
+Only requires an installation of pytz to system to prevent miscalculations due to timezones
 ```shell
 > pip install pytz
 ```
